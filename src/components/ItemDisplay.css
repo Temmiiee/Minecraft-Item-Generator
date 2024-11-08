@@ -1,0 +1,110 @@
+/* Global styles for the page */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #4a90e2, #9013fe);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover;
+    overflow: hidden;
+}
+
+/* Main container for the generated item */
+.item-display-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    text-align: center;
+    position: relative; /* Positioning for confetti */
+    margin: auto; /* Center the container */
+}
+
+.header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #ffb100;
+}
+
+/* Slot machine (contains the item) */
+.machine-slot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #222;
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 15px #ffb100, inset 0px 0px 15px #ffb100;
+    transition: transform 0.3s ease;
+}
+
+/* Animation to spin the item image */
+.item-display.rolling .icon-minecraft {
+  animation: spin 0.1s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Style for the item (large and sharp image) */
+.item-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item-display .icon-minecraft {
+  width: 64px;
+  height: 64px;
+  background-size: 1024px 1568px; /* Adjust this value according to your spritesheet size */
+}
+
+.item-label {
+  font-size: 24px;
+  font-weight: bold;
+  max-width: 100%; /* Limit the width of the element */
+  text-align: center; /* Center the text */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.item-image {
+  width: 64px;
+  height: 64px;
+}
+
+.item-display.large .item-image {
+  width: 128px;
+  height: 128px;
+}
+
+/* Style for the button */
+.generate-button {
+    background-color: #ffb100;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.generate-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
