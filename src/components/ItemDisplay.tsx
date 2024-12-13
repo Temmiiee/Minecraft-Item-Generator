@@ -1,13 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Confetti from 'react-confetti';
+import { getSpriteStyle } from '../utils/spriteUtils';
 
 interface MinecraftItem {
   item: string;
   id: string;
-  stackability: number;
+  stackability: number | string;
   survival_obtainable: string;
   peaceful_obtainable: string;
+  spriteClass: string;
+  spriteX: number;
+  spriteY: number;
 }
 
 const ItemDisplay: React.FC = () => {
@@ -23,13 +27,41 @@ const ItemDisplay: React.FC = () => {
   });
 
   useEffect(() => {
-    fetch('src/assets/itemlist.json')
-      .then((response) => response.json())
-      .then((data) => {
-        setItems(data);
-        setFilteredItems(data);
-      })
-      .catch((error) => console.error("Error loading items:", error));
+    const fetchData = async () => {
+      try {
+        const itemDataResponse = await fetch('src/assets/item_data.json');
+        const itemData = await itemDataResponse.json();
+        const blockDataResponse = await fetch('src/assets/block_data.json');
+        const blockData = await blockDataResponse.json();
+        const blockData112Response = await fetch('src/assets/block_data_1.12.json');
+        const blockData112 = await blockData112Response.json();
+
+        // Combine data from all sources
+        const combinedData = [...itemData.key_list, ...blockData.key_list, ...blockData112.key_list].map((item) => {
+          const spriteInfo = itemData.sprites[item] || blockData.sprites[item] || blockData112.sprites[item];
+          const stackability = (itemData.entries && itemData.entries[item]) || (blockData.entries && blockData.entries[item]) || (blockData112.entries && blockData112.entries[item]) || 64;
+          const survival_obtainable = (itemData.survival_obtainable && itemData.survival_obtainable[item]) || 'Yes';
+          const peaceful_obtainable = (itemData.peaceful_obtainable && itemData.peaceful_obtainable[item]) || 'Yes';
+          return {
+            item,
+            id: item.toLowerCase().replace(/ /g, '_'),
+            stackability,
+            survival_obtainable,
+            peaceful_obtainable,
+            spriteClass: spriteInfo ? spriteInfo[0] : '',
+            spriteX: spriteInfo ? spriteInfo[1] : 0,
+            spriteY: spriteInfo ? spriteInfo[2] : 0,
+          };
+        });
+
+        setItems(combinedData);
+        setFilteredItems(combinedData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -44,7 +76,7 @@ const ItemDisplay: React.FC = () => {
     const applyFilters = () => {
       let filtered = items;
       if (filters.stackability) {
-        filtered = filtered.filter(item => item.stackability === parseInt(filters.stackability));
+        filtered = filtered.filter(item => item.stackability.toString() === filters.stackability);
       }
       if (filters.survival_obtainable) {
         filtered = filtered.filter(item => item.survival_obtainable === filters.survival_obtainable);
@@ -52,6 +84,7 @@ const ItemDisplay: React.FC = () => {
       if (filters.peaceful_obtainable) {
         filtered = filtered.filter(item => item.peaceful_obtainable === filters.peaceful_obtainable);
       }
+      console.log('Filtered Items:', filtered);
       setFilteredItems(filtered);
     };
     applyFilters();
@@ -79,6 +112,8 @@ const ItemDisplay: React.FC = () => {
           }
         }, 100);
       }, 200);
+    } else {
+      console.log('No items to display');
     }
   }, [filteredItems]);
 
@@ -119,7 +154,7 @@ const ItemDisplay: React.FC = () => {
       <div className={`card p-3 ${isRolling ? 'rolling' : ''}`}>
         {randomItem ? (
           <div className="d-flex flex-column align-items-center">
-            <i className={`icon-minecraft ${randomItem.id}`} style={{ width: 64, height: 64 }}></i>
+            <span style={getSpriteStyle(randomItem.spriteClass, randomItem.spriteX, randomItem.spriteY)}></span>
             <h3 className="mt-3">{randomItem.item}</h3>
           </div>
         ) : (
