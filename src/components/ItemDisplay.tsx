@@ -1,30 +1,34 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Confetti from 'react-confetti';
 import { getSpriteStyle } from '../utils/spriteUtils';
+import './ItemDisplay.css';
 
 interface MinecraftItem {
   item: string;
   id: string;
-  stackability: number | string;
   survival_obtainable: string;
+  survival_available: string;
   peaceful_obtainable: string;
   spriteClass: string;
   spriteX: number;
   spriteY: number;
 }
 
-const ItemDisplay: React.FC = () => {
+interface ItemDisplayProps {
+  setShowConfetti: (show: boolean) => void;
+}
+
+const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
   const [items, setItems] = useState<MinecraftItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MinecraftItem[]>([]);
   const [randomItem, setRandomItem] = useState<MinecraftItem | null>(null);
   const [isRolling, setIsRolling] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [filters, setFilters] = useState({
-    stackability: '',
     survival_obtainable: '',
     peaceful_obtainable: '',
   });
+  const [timer, setTimer] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,26 +40,53 @@ const ItemDisplay: React.FC = () => {
         const blockData112Response = await fetch('src/assets/block_data_1.12.json');
         const blockData112 = await blockData112Response.json();
 
-        // Combine data from all sources
-        const combinedData = [...itemData.key_list, ...blockData.key_list, ...blockData112.key_list].map((item) => {
-          const spriteInfo = itemData.sprites[item] || blockData.sprites[item] || blockData112.sprites[item];
-          const stackability = (itemData.entries && itemData.entries[item]) || (blockData.entries && blockData.entries[item]) || (blockData112.entries && blockData112.entries[item]) || 64;
-          const survival_obtainable = (itemData.survival_obtainable && itemData.survival_obtainable[item]) || 'Yes';
-          const peaceful_obtainable = (itemData.peaceful_obtainable && itemData.peaceful_obtainable[item]) || 'Yes';
-          return {
+        const extractSurvivalObtainable = (entries: Record<string, string | Record<string, string>>, item: string): string => {
+          if (typeof entries[item] === 'string') {
+            return entries[item];
+          } else if (typeof entries[item] === 'object') {
+            for (const key in entries[item]) {
+              if (Object.prototype.hasOwnProperty.call(entries[item], key)) {
+                if (key.split('<br>').includes(item)) {
+                  return entries[item][key];
+                }
+              }
+            }
+          }
+          return 'Yes';
+        };
+
+        const combinedData = [
+          ...itemData.key_list.map((item: string) => ({
             item,
-            id: item.toLowerCase().replace(/ /g, '_'),
-            stackability,
-            survival_obtainable,
-            peaceful_obtainable,
-            spriteClass: spriteInfo ? spriteInfo[0] : '',
-            spriteX: spriteInfo ? spriteInfo[1] : 0,
-            spriteY: spriteInfo ? spriteInfo[2] : 0,
-          };
-        });
+            spriteInfo: itemData.sprites[item],
+            survival_obtainable: extractSurvivalObtainable(itemData.properties.survival_obtainable.entries, item),
+            peaceful_obtainable: itemData.properties.peaceful_obtainable?.entries?.[item] || 'Yes',
+          })),
+          ...blockData.key_list.map((item: string) => ({
+            item,
+            spriteInfo: blockData.sprites[item],
+            survival_available: blockData.properties.survival_available?.entries?.[item] || 'Creatable',
+          })),
+          ...blockData112.key_list.map((item: string) => ({
+            item,
+            spriteInfo: blockData112.sprites[item],
+            survival_available: blockData112.survival_available?.entries?.[item] || 'Creatable',
+          })),
+        ].map((item) => ({
+          item: item.item,
+          id: item.item.toLowerCase().replace(/ /g, '_'),
+          survival_obtainable: item.survival_obtainable,
+          survival_available: item.survival_available,
+          peaceful_obtainable: item.peaceful_obtainable,
+          spriteClass: item.spriteInfo ? item.spriteInfo[0] : '',
+          spriteX: item.spriteInfo ? item.spriteInfo[1] : 0,
+          spriteY: item.spriteInfo ? item.spriteInfo[2] : 0,
+        }));
 
         setItems(combinedData);
         setFilteredItems(combinedData);
+
+        console.log('All Items and Blocks:', combinedData);
       } catch (error) {
         console.error("Error loading data:", error);
       }
@@ -75,16 +106,17 @@ const ItemDisplay: React.FC = () => {
   useEffect(() => {
     const applyFilters = () => {
       let filtered = items;
-      if (filters.stackability) {
-        filtered = filtered.filter(item => item.stackability.toString() === filters.stackability);
-      }
       if (filters.survival_obtainable) {
-        filtered = filtered.filter(item => item.survival_obtainable === filters.survival_obtainable);
+        filtered = filtered.filter(item => {
+          const survivalStatus = item.survival_obtainable !== 'No' && item.survival_available !== 'No';
+          return filters.survival_obtainable === 'Yes'
+            ? survivalStatus
+            : !survivalStatus;
+        });
       }
       if (filters.peaceful_obtainable) {
         filtered = filtered.filter(item => item.peaceful_obtainable === filters.peaceful_obtainable);
       }
-      console.log('Filtered Items:', filtered);
       setFilteredItems(filtered);
     };
     applyFilters();
@@ -107,33 +139,42 @@ const ItemDisplay: React.FC = () => {
               const finalIndex = Math.floor(Math.random() * filteredItems.length);
               setRandomItem(filteredItems[finalIndex]);
               setIsRolling(false);
-              setShowConfetti(true);
+
+              // Start the timer when the item has finished generating
+              setTimer(0);
+              if (timerRef.current) {
+                clearInterval(timerRef.current);
+              }
+              timerRef.current = setInterval(() => {
+                setTimer(prev => prev + 1);
+              }, 1000);
             }, 500);
           }
         }, 100);
       }, 200);
-    } else {
-      console.log('No items to display');
     }
-  }, [filteredItems]);
+  }, [filteredItems, setShowConfetti]);
+
+  const handleItemObtained = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    setShowConfetti(true);
+  };
 
   useEffect(() => {
     generateRandomItem();
-  }, [filteredItems, generateRandomItem]);
+  }, [generateRandomItem]);
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+    const seconds = (time % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  };
 
   return (
     <div className="d-flex flex-column align-items-center mt-5 position-relative">
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
       <div className="d-flex mb-3">
-        <div className="me-3">
-          <label className="form-label">Stackability</label>
-          <select className="form-select" name="stackability" value={filters.stackability} onChange={handleFilterChange}>
-            <option value="">Any</option>
-            <option value="64">64</option>
-            <option value="16">16</option>
-            <option value="Unstackable">Unstackable</option>
-          </select>
-        </div>
         <div className="me-3">
           <label className="form-label">Survival Obtainable</label>
           <select className="form-select" name="survival_obtainable" value={filters.survival_obtainable} onChange={handleFilterChange}>
@@ -152,18 +193,32 @@ const ItemDisplay: React.FC = () => {
         </div>
       </div>
       <div className={`card p-3 ${isRolling ? 'rolling' : ''}`}>
-        {randomItem ? (
+        {filteredItems.length === 0 ? (
+          <p>No items to display</p>
+        ) : randomItem ? (
           <div className="d-flex flex-column align-items-center">
             <span style={getSpriteStyle(randomItem.spriteClass, randomItem.spriteX, randomItem.spriteY)}></span>
             <h3 className="mt-3">{randomItem.item}</h3>
+            <p>Survival Obtainable: {(randomItem.survival_obtainable === 'Yes' || randomItem.survival_available === 'Creatable') ? 'Yes' : 'No'}</p>
+            <p>Peaceful Obtainable: {typeof randomItem.peaceful_obtainable === 'string' && randomItem.peaceful_obtainable.trim() !== '' ? randomItem.peaceful_obtainable : 'No'}</p>
           </div>
         ) : (
           <p>Loading...</p>
         )}
       </div>
-      <button className="btn btn-primary mt-3" onClick={generateRandomItem} disabled={isRolling}>
-        {isRolling ? "🎲 Drawing..." : "Generate another item"}
-      </button>
+      {randomItem && (
+        <div className="timer mt-2">
+          {formatTime(timer)}
+        </div>
+      )}
+      <div className="d-flex mt-3">
+        <button className="btn btn-primary me-2" onClick={generateRandomItem} disabled={isRolling || filteredItems.length === 0}>
+          {isRolling ? "🎲 Drawing..." : "Generate another item"}
+        </button>
+        <button className="btn btn-success" onClick={handleItemObtained} disabled={isRolling || !randomItem}>
+          Item obtained
+        </button>
+      </div>
     </div>
   );
 };
