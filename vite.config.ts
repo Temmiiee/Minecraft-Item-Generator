@@ -2,14 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/Minecraft-Item-Generator/',
   plugins: [react()],
-  build: {
-    sourcemap: true,
-    outDir: 'dist',
-    assetsDir: 'assets'
-  },
+  base: '/Minecraft-Item-Generator/',
   server: {
     open: true,
-  }
+    hmr: true,
+  },
 });
