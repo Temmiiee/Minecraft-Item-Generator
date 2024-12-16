@@ -1,17 +1,18 @@
 export const getSpriteStyle = (spriteClass: string, x: number, y: number) => {
   let spriteSheet = '';
+  const baseUrl = import.meta.env.BASE_URL;
   switch (spriteClass) {
     case 'block-sprite':
-      spriteSheet = './assets/img/BlockCSS.png';
+      spriteSheet = `${baseUrl}assets/img/BlockCSS.png`;
       break;
     case 'block-sprite2':
-      spriteSheet = './assets/img/BlockCSS2.png';
+      spriteSheet = `${baseUrl}assets/img/BlockCSS2.png`;
       break;
     case 'item-sprite':
-      spriteSheet = './assets/img/ItemCSS.png';
+      spriteSheet = `${baseUrl}assets/img/ItemCSS.png`;
       break;
     case 'block-sprite3':
-      spriteSheet = './assets/img/BlockCSS_1.20.png';
+      spriteSheet = `${baseUrl}assets/img/BlockCSS_1.20.png`;
       break;
     default:
       spriteSheet = '';
@@ -22,6 +23,6 @@ export const getSpriteStyle = (spriteClass: string, x: number, y: number) => {
     backgroundPosition: `${x}px ${y}px`,
     width: '16px',
     height: '16px',
-    display: 'inline-block'
+    display: 'inline-block',
   };
 };
