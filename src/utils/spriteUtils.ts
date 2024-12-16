@@ -2,16 +2,16 @@ export const getSpriteStyle = (spriteClass: string, x: number, y: number) => {
   let spriteSheet = '';
   switch (spriteClass) {
     case 'block-sprite':
-      spriteSheet = 'src/assets/img/BlockCSS.png';
+      spriteSheet = './assets/img/BlockCSS.png';
       break;
     case 'block-sprite2':
-      spriteSheet = 'src/assets/img/BlockCSS2.png';
+      spriteSheet = './assets/img/BlockCSS2.png';
       break;
     case 'item-sprite':
-      spriteSheet = 'src/assets/img/ItemCSS.png';
+      spriteSheet = './assets/img/ItemCSS.png';
       break;
     case 'block-sprite3':
-      spriteSheet = 'src/assets/img/BlockCSS_1.20.png';
+      spriteSheet = './assets/img/BlockCSS_1.20.png';
       break;
     default:
       spriteSheet = '';

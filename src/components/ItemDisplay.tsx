@@ -33,11 +33,11 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const itemDataResponse = await fetch('/assets/item_data.json');
+        const itemDataResponse = await fetch('./assets/item_data.json');
         const itemData = await itemDataResponse.json();
-        const blockDataResponse = await fetch('/assets/block_data.json');
+        const blockDataResponse = await fetch('./assets/block_data.json');
         const blockData = await blockDataResponse.json();
-        const blockData112Response = await fetch('/assets/block_data_1.12.json');
+        const blockData112Response = await fetch('./assets/block_data_1.12.json');
         const blockData112 = await blockData112Response.json();
 
         const extractSurvivalObtainable = (entries: Record<string, string | Record<string, string>>, item: string): string => {
@@ -86,7 +86,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
         setItems(combinedData);
         setFilteredItems(combinedData);
 
-        console.log('All Items and Blocks:', combinedData);
       } catch (error) {
         console.error("Error loading data:", error);
       }
