@@ -8,7 +8,6 @@ interface MinecraftItem {
   id: string;
   survival_obtainable: string;
   survival_available: string;
-  peaceful_obtainable: string;
   spriteClass: string;
   spriteX: number;
   spriteY: number;
@@ -25,7 +24,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
   const [isRolling, setIsRolling] = useState(false);
   const [filters, setFilters] = useState({
     survival_obtainable: '',
-    peaceful_obtainable: '',
   });
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,7 +59,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
             item,
             spriteInfo: itemData.sprites[item],
             survival_obtainable: extractSurvivalObtainable(itemData.properties.survival_obtainable.entries, item),
-            peaceful_obtainable: itemData.properties.peaceful_obtainable?.entries?.[item] || 'Yes',
           })),
           ...blockData.key_list.map((item: string) => ({
             item,
@@ -78,7 +75,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
           id: item.item.toLowerCase().replace(/ /g, '_'),
           survival_obtainable: item.survival_obtainable,
           survival_available: item.survival_available,
-          peaceful_obtainable: item.peaceful_obtainable,
           spriteClass: item.spriteInfo ? item.spriteInfo[0] : '',
           spriteX: item.spriteInfo ? item.spriteInfo[1] : 0,
           spriteY: item.spriteInfo ? item.spriteInfo[2] : 0,
@@ -113,9 +109,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
             ? survivalStatus
             : !survivalStatus;
         });
-      }
-      if (filters.peaceful_obtainable) {
-        filtered = filtered.filter(item => item.peaceful_obtainable === filters.peaceful_obtainable);
       }
       setFilteredItems(filtered);
     };
@@ -183,14 +176,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
             <option value="No">No</option>
           </select>
         </div>
-        <div>
-          <label className="form-label">Peaceful Obtainable</label>
-          <select className="form-select" name="peaceful_obtainable" value={filters.peaceful_obtainable} onChange={handleFilterChange}>
-            <option value="">Any</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
       </div>
       <div className={`card p-3 ${isRolling ? 'rolling' : ''}`}>
         {filteredItems.length === 0 ? (
@@ -200,7 +185,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
             <span style={getSpriteStyle(randomItem.spriteClass, randomItem.spriteX, randomItem.spriteY)}></span>
             <h3 className="mt-3">{randomItem.item}</h3>
             <p>Survival Obtainable: {(randomItem.survival_obtainable === 'Yes' || randomItem.survival_available === 'Creatable') ? 'Yes' : 'No'}</p>
-            <p>Peaceful Obtainable: {typeof randomItem.peaceful_obtainable === 'string' && randomItem.peaceful_obtainable.trim() !== '' ? randomItem.peaceful_obtainable : 'No'}</p>
           </div>
         ) : (
           <p>Loading...</p>
