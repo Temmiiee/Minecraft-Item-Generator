@@ -2,6 +2,7 @@
   "name": "minecraft-item-generator",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://temmiiee.github.io/Minecraft-Item-Generator",
   "type": "module",
   "scripts": {
     "dev": "vite",

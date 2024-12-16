@@ -36,10 +36,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
         const baseUrl = import.meta.env.BASE_URL;
         const itemDataResponse = await fetch(`${baseUrl}assets/item_data.json`);
         const itemData = await itemDataResponse.json();
-  
         const blockDataResponse = await fetch(`${baseUrl}assets/block_data.json`);
         const blockData = await blockDataResponse.json();
-  
         const blockData112Response = await fetch(`${baseUrl}assets/block_data_1.12.json`);
         const blockData112 = await blockData112Response.json();
 
