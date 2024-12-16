@@ -8,6 +8,10 @@ This project is a Minecraft item generator that simulates a slot machine to rand
 - Filter items if they are survival obtainable or not
 - Display item sprites using sprite sheets
 
+## Website
+
+The website is deployed at https://temmiiee.github.io/Minecraft-Item-Generator/
+
 ## Installation
 
 1. Clone the repository:
