@@ -5,7 +5,7 @@ This project is a Minecraft item generator that simulates a slot machine to rand
 ## Features
 
 - Randomly generate Minecraft items
-- Filter items based on stackability, survival obtainability, and peaceful obtainability
+- Filter items if they are survival obtainable or not
 - Display item sprites using sprite sheets
 
 ## Installation
@@ -20,7 +20,7 @@ This project is a Minecraft item generator that simulates a slot machine to rand
 
 3. Install the dependencies:
    ```sh
-   cd Minecraft-Item-Generator
+   npm install
 
 ## Usage
 
