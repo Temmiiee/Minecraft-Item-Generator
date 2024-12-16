@@ -166,7 +166,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center mt-5 position-relative">
+    <div className="d-flex flex-column align-items-center mt-1 position-relative">
       <div className="d-flex mb-3">
         <div className="me-3">
           <label className="form-label">Survival Obtainable</label>

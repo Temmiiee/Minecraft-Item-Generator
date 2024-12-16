@@ -39,7 +39,7 @@ const App: React.FC = () => {
   }, [isNightMode]);
 
   return (
-    <div className="App container text-center mt-5">
+    <div className="App container text-center">
       {showConfetti && <Confetti numberOfPieces={confettiPieces} width={window.innerWidth} height={window.innerHeight} />}
       <h1 className="display-4">🎰 Minecraft Item Generator 🎰</h1>
       <button className="btn btn-secondary mb-3" onClick={() => setIsNightMode(!isNightMode)}>
