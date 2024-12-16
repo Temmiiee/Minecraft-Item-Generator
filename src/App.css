@@ -2,6 +2,11 @@ body {
   font-family: 'Minecraft', sans-serif;
   background-color: #87ceeb;
   transition: background-color 0.5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
 body.night-mode {
