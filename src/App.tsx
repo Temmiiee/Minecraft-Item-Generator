@@ -42,7 +42,7 @@ const App: React.FC = () => {
     <div className="App container text-center">
       {showConfetti && <Confetti numberOfPieces={confettiPieces} width={window.innerWidth} height={window.innerHeight} />}
       <h1 className="display-4">🎰 Minecraft Item Generator 🎰</h1>
-      <button className="btn btn-secondary mb-3" onClick={() => setIsNightMode(!isNightMode)}>
+      <button className="btn btn-secondary mb-3 mt-4" onClick={() => setIsNightMode(!isNightMode)}>
         {isNightMode ? 'Switch to Day Mode' : 'Switch to Night Mode'}
       </button>
       <ItemDisplay setShowConfetti={setShowConfetti} />

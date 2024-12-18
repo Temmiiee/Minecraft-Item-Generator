@@ -17,8 +17,8 @@ body.night-mode {
   background-color: #f8f9fa;
   border: 2px solid #000;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  width: 300px;
-  height: 250px;
+  width: 45%;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;

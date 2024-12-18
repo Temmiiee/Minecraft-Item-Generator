@@ -165,12 +165,18 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
     return `${minutes}:${seconds}`;
   };
 
-  return (
+    return (
     <div className="d-flex flex-column align-items-center mt-1 position-relative">
       <div className="d-flex mb-3">
         <div className="me-3">
-          <label className="form-label">Survival Obtainable</label>
-          <select className="form-select" name="survival_obtainable" value={filters.survival_obtainable} onChange={handleFilterChange}>
+          <label className="form-label" htmlFor="survival_obtainable">Survival Obtainable</label>
+          <select
+            className="form-select"
+            id="survival_obtainable"
+            name="survival_obtainable"
+            value={filters.survival_obtainable}
+            onChange={handleFilterChange}
+          >
             <option value="">Any</option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
@@ -183,7 +189,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
         ) : randomItem ? (
           <div className="d-flex flex-column align-items-center">
             <span style={getSpriteStyle(randomItem.spriteClass, randomItem.spriteX, randomItem.spriteY)}></span>
-            <h3 className="mt-3">{randomItem.item}</h3>
+            <h2 className="mt-3">{randomItem.item}</h2>
             <p>Survival Obtainable: {(randomItem.survival_obtainable === 'Yes' || randomItem.survival_available === 'Creatable') ? 'Yes' : 'No'}</p>
           </div>
         ) : (
@@ -205,6 +211,6 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ItemDisplay;
