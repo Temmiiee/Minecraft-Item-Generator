@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://temmiiee.github.io/Minecraft-Item-Generator/sitemap.xml
