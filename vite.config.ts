@@ -5,7 +5,6 @@ export default defineConfig({
   base: '/Minecraft-Item-Generator/',
   build: {
     outDir: 'dist',
-    sourcemap: false,
   },
   plugins: [react()],
 });
