@@ -126,3 +126,31 @@ body.night-mode .github-icon {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+.form-check-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.form-check-input:checked {
+  background-color: #3498db;
+  border-color: #2980b9;
+}
+
+.night-mode .form-check-input:checked {
+  background-color: #d32f2f;
+  border-color: #b71c1c;
+}
+
+.form-check-label {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.night-mode .form-check-label {
+  color: #ecf0f1;
+}

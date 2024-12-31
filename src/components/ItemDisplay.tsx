@@ -15,9 +15,10 @@ interface MinecraftItem {
 
 interface ItemDisplayProps {
   setShowConfetti: (show: boolean) => void;
+  useTimer: boolean;
 }
 
-const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
+const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti, useTimer }) => {
   const [items, setItems] = useState<MinecraftItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MinecraftItem[]>([]);
   const [randomItem, setRandomItem] = useState<MinecraftItem | null>(null);
@@ -138,15 +139,19 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
               if (timerRef.current) {
                 clearInterval(timerRef.current);
               }
-              timerRef.current = setInterval(() => {
-                setTimer(prev => prev + 1);
-              }, 1000);
+              if (useTimer) {
+                timerRef.current = setInterval(() => {
+                  setTimer(prev => prev + 1);
+                }, 1000);
+              } else {
+                setShowConfetti(true);
+              }
             }, 500);
           }
         }, 100);
       }, 200);
     }
-  }, [filteredItems, setShowConfetti]);
+  }, [filteredItems, setShowConfetti, useTimer]);
 
   const handleItemObtained = () => {
     if (timerRef.current) {
@@ -165,7 +170,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
     return `${minutes}:${seconds}`;
   };
 
-    return (
+  return (
     <div className="d-flex flex-column align-items-center mt-1 position-relative">
       <div className="d-flex mb-3">
         <div className="me-3">
@@ -196,7 +201,7 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
           <p>Loading...</p>
         )}
       </div>
-      {randomItem && (
+      {useTimer && randomItem && (
         <div className="timer mt-2">
           {formatTime(timer)}
         </div>
@@ -205,9 +210,11 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti }) => {
         <button className="btn btn-primary me-2" onClick={generateRandomItem} disabled={isRolling || filteredItems.length === 0}>
           {isRolling ? "🎲 Drawing..." : "Generate another item"}
         </button>
-        <button className="btn btn-success" onClick={handleItemObtained} disabled={isRolling || !randomItem}>
-          Item obtained
-        </button>
+        {useTimer && (
+          <button className="btn btn-success" onClick={handleItemObtained} disabled={isRolling || !randomItem}>
+            Item obtained
+          </button>
+        )}
       </div>
     </div>
   );
