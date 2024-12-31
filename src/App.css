@@ -130,6 +130,7 @@ body.night-mode .github-icon {
 .form-check-input {
   width: 20px;
   height: 20px;
+  margin-bottom: auto;
   cursor: pointer;
   transition: background-color 0.3s, border-color 0.3s;
 }
