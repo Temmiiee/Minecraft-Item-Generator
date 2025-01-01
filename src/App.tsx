@@ -16,7 +16,7 @@ const App = () => {
   return (
     <div className="App container text-center">
       {showConfetti && <Confetti numberOfPieces={confettiPieces} width={window.innerWidth} height={window.innerHeight} />}
-      <h1 className="display-4">🎰 Minecraft Item Generator 🎰</h1>
+      <h1 className="display-4">🎰 Random Minecraft Item Generator 🎰</h1>
       <div className="d-flex justify-content-center align-items-center mb-3 mt-4">
         <button className="btn btn-secondary me-3" onClick={() => setIsNightMode(!isNightMode)}>
           {isNightMode ? 'Switch to Day Mode' : 'Switch to Night Mode'}
