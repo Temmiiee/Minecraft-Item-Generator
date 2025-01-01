@@ -27,7 +27,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti, useTimer }) 
     survival_obtainable: '',
   });
   const [timer, setTimer] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,6 +118,8 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti, useTimer }) 
   }, [filters, items]);
 
   const generateRandomItem = useCallback(() => {
+    if (isRolling) return; // Ne pas relancer si un tirage est déjà en cours
+
     if (filteredItems.length > 0) {
       setIsRolling(true);
       setShowConfetti(false);
@@ -136,13 +139,18 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti, useTimer }) 
 
               // Start the timer when the item has finished generating
               setTimer(0);
+              startTimeRef.current = performance.now();
               if (timerRef.current) {
-                clearInterval(timerRef.current);
+                cancelAnimationFrame(timerRef.current);
               }
               if (useTimer) {
-                timerRef.current = setInterval(() => {
-                  setTimer(prev => prev + 1);
-                }, 1000);
+                const updateTimer = (currentTime: number) => {
+                  if (startTimeRef.current !== null) {
+                    setTimer(Math.floor((currentTime - startTimeRef.current) / 1000));
+                    timerRef.current = requestAnimationFrame(updateTimer);
+                  }
+                };
+                timerRef.current = requestAnimationFrame(updateTimer);
               } else {
                 setShowConfetti(true);
               }
@@ -151,18 +159,20 @@ const ItemDisplay: React.FC<ItemDisplayProps> = ({ setShowConfetti, useTimer }) 
         }, 100);
       }, 200);
     }
-  }, [filteredItems, setShowConfetti, useTimer]);
+  }, [filteredItems, setShowConfetti, useTimer, isRolling]);
 
   const handleItemObtained = () => {
     if (timerRef.current) {
-      clearInterval(timerRef.current);
+      cancelAnimationFrame(timerRef.current);
     }
     setShowConfetti(true);
   };
 
   useEffect(() => {
-    generateRandomItem();
-  }, [generateRandomItem]);
+    if (filteredItems.length > 0) {
+      generateRandomItem();
+    }
+  }, [filteredItems]); // Appeler generateRandomItem lorsque filteredItems est mis à jour
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60).toString().padStart(2, '0');
